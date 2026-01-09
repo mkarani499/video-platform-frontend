@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }) => {
       login,
       logout,
       getToken,
-      isAuthenticated,
+      isAuthenticated: isAuthenticated(),  // ← CHANGED: Added parentheses ()
       isAdmin,
       loading
     }}>

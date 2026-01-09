@@ -254,8 +254,8 @@ function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (userData) => {
-    login(userData);
+  const handleLogin = (userData, token) => {  // ← Added token parameter
+    login(userData, token);  // ← Added token parameter
     navigate('/dashboard');
   };
 

@@ -26,7 +26,7 @@ function LoginForm({ onLogin }) {
     setError('');
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL;
+      const API_URL = process.env.REACT_APP_API_URL || 'https://video-platform2-api.onrender.com';  // ← Added fallback URL
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       
       const response = await fetch(API_URL + endpoint, {
@@ -42,12 +42,13 @@ function LoginForm({ onLogin }) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         
-        if (onLogin) onLogin(data.user);
+        if (onLogin) onLogin(data.user, data.token);  // ← CHANGED: Added data.token
         navigate('/dashboard');
       } else {
         setError(data.error || 'Authentication failed');
       }
     } catch (err) {
+      console.error('Auth error:', err);  // ← Added console.error
       setError('Network error. Please try again.');
     } finally {
       setLoading(false);
