@@ -14,6 +14,7 @@ function VideoUploadForm({ onUploadSuccess }) {
 
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
+    console.log('🎬 Video selected:', file);
     if (file && file.type.startsWith('video/')) {
       setVideoFile(file);
     } else {
@@ -23,6 +24,7 @@ function VideoUploadForm({ onUploadSuccess }) {
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
+    console.log('🖼️ Thumbnail selected:', file);  // ✅ ADDED DEBUG
     if (file && file.type.startsWith('image/')) {
       setThumbnailFile(file);
     } else {
@@ -42,14 +44,38 @@ function VideoUploadForm({ onUploadSuccess }) {
 
     const formData = new FormData();
     formData.append('video', videoFile);
-    if (thumbnailFile) formData.append('thumbnail', thumbnailFile);
+    
+    // ✅ ADDED DETAILED THUMBNAIL DEBUGGING
+    if (thumbnailFile) {
+      console.log('🖼️ Thumbnail file before append:', thumbnailFile);
+      console.log('🖼️ Thumbnail name:', thumbnailFile.name);
+      console.log('🖼️ Thumbnail type:', thumbnailFile.type);
+      console.log('🖼️ Thumbnail size:', (thumbnailFile.size / 1024).toFixed(2), 'KB');
+      formData.append('thumbnail', thumbnailFile);
+    } else {
+      console.log('⚠️ No thumbnail file selected');
+    }
+    
     formData.append('title', title);
     formData.append('description', description);
     formData.append('price', price);
     formData.append('isPublic', 'true');
 
+    // ✅ LOG ALL FORMDATA CONTENTS
+    console.log('🔍 Final FormData contents:');
+    for (let pair of formData.entries()) {
+      console.log(pair[0], pair[1] instanceof File ? `File: ${pair[1].name} (${(pair[1].size / 1024).toFixed(2)} KB)` : pair[1]);
+    }
+
+    // Also log token info for debugging
+    const token = getToken();
+    console.log('🔑 Token exists:', !!token);
+    console.log('📡 API URL:', process.env.REACT_APP_API_URL);
+
     try {
       const API_URL = process.env.REACT_APP_API_URL;
+      console.log('🚀 Sending request to:', `${API_URL}/api/upload/video-with-thumbnail`);
+      
       const response = await fetch(`${API_URL}/api/upload/video-with-thumbnail`, {
         method: 'POST',
         headers: {
@@ -58,7 +84,10 @@ function VideoUploadForm({ onUploadSuccess }) {
         body: formData
       });
 
+      console.log('📥 Response status:', response.status);
+      
       const data = await response.json();
+      console.log('📦 Response data:', data);
 
       if (data.success) {
         setMessage('✅ Video uploaded successfully!');
@@ -75,7 +104,7 @@ function VideoUploadForm({ onUploadSuccess }) {
         setMessage(`❌ ${data.error || 'Upload failed'}`);
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload error:', error);
       setMessage(`❌ Error: ${error.message}`);
     } finally {
       setUploading(false);
