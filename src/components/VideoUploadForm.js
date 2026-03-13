@@ -53,6 +53,24 @@ function VideoUploadForm({ onUploadSuccess }) {
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'https://video-platform2-api.onrender.com';
       
+      // 🔍 ADDED DETAILED DEBUG LOGGING RIGHT BEFORE FETCH
+      console.log('\n========== FRONTEND UPLOAD DEBUG ==========');
+      console.log('1. FormData entries:');
+      for (let pair of formData.entries()) {
+        if (pair[0] === 'thumbnail' && pair[1] instanceof File) {
+          console.log(`   thumbnail: ${pair[1].name} (${pair[1].type}, ${pair[1].size} bytes)`);
+        } else if (pair[0] === 'video') {
+          console.log(`   video: ${pair[1].name} (${pair[1].type}, ${pair[1].size} bytes)`);
+        } else {
+          console.log(`   ${pair[0]}: ${pair[1]}`);
+        }
+      }
+      console.log('2. Token present:', !!getToken());
+      console.log('3. Token preview:', getToken() ? getToken().substring(0, 20) + '...' : 'No token');
+      console.log('4. API URL:', API_URL);
+      console.log('5. Full request URL:', `${API_URL}/api/upload/video-with-thumbnail`);
+      console.log('==========================================\n');
+
       const response = await fetch(`${API_URL}/api/upload/video-with-thumbnail`, {
         method: 'POST',
         headers: {
@@ -61,7 +79,11 @@ function VideoUploadForm({ onUploadSuccess }) {
         body: formData
       });
 
+      console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', response.headers.get('content-type'));
+      
       const data = await response.json();
+      console.log('📦 Response data:', data);
 
       if (data.success) {
         setMessage('✅ Video uploaded successfully!');
@@ -77,7 +99,7 @@ function VideoUploadForm({ onUploadSuccess }) {
         setMessage(`❌ ${data.error || 'Upload failed'}`);
       }
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload error:', error);
       setMessage(`❌ Error: ${error.message}`);
     } finally {
       setUploading(false);
