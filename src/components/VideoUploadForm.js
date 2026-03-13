@@ -13,7 +13,6 @@ function VideoUploadForm({ onUploadSuccess }) {
 
   const handleVideoChange = (e) => {
     const file = e.target.files[0];
-    console.log('Video selected:', file?.name);
     if (file && file.type.startsWith('video/')) {
       setVideoFile(file);
     } else {
@@ -23,11 +22,10 @@ function VideoUploadForm({ onUploadSuccess }) {
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
-    console.log('Thumbnail selected:', file?.name);
     if (file && file.type.startsWith('image/')) {
       setThumbnailFile(file);
     } else if (file) {
-      alert('Please select a valid image file');
+      alert('Please select a valid image file (JPG, PNG, GIF)');
     }
   };
 
@@ -52,16 +50,6 @@ function VideoUploadForm({ onUploadSuccess }) {
     formData.append('price', price.toString());
     formData.append('isPublic', 'true');
 
-    // Debug log
-    console.log('Sending FormData:');
-    for (let pair of formData.entries()) {
-      if (pair[0] === 'video' || pair[0] === 'thumbnail') {
-        console.log(pair[0], pair[1]?.name || 'File');
-      } else {
-        console.log(pair[0], pair[1]);
-      }
-    }
-
     try {
       const API_URL = process.env.REACT_APP_API_URL || 'https://video-platform2-api.onrender.com';
       
@@ -73,10 +61,7 @@ function VideoUploadForm({ onUploadSuccess }) {
         body: formData
       });
 
-      console.log('Response status:', response.status);
-      
       const data = await response.json();
-      console.log('Response data:', data);
 
       if (data.success) {
         setMessage('✅ Video uploaded successfully!');
@@ -159,7 +144,7 @@ function VideoUploadForm({ onUploadSuccess }) {
           <input
             id="thumbnail-input"
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/gif"
             onChange={handleThumbnailChange}
             style={{ width: '100%' }}
           />
