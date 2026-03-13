@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';  // ✅ Removed Navigate
 import './App.css';
 import PaymentForm from './components/PaymentForm';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -27,7 +27,7 @@ function AppContent() {
   const [videos, setVideos] = useState([]);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [loadingVideos, setLoadingVideos] = useState(true);
-  const { isAuthenticated, user, logout, login } = useAuth();
+  const { isAuthenticated, user, logout } = useAuth();  // ✅ Removed 'login' from destructuring
   const navigate = useNavigate();
 
   // Test backend connection on startup
@@ -254,8 +254,8 @@ function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = (userData, token) => {  // ← Added token parameter
-    login(userData, token);  // ← Added token parameter
+  const handleLogin = (userData, token) => {
+    login(userData, token);
     navigate('/dashboard');
   };
 
